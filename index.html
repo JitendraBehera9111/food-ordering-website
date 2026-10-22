@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gourmet Express | Delicious Food Delivered</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="storefront-page">
+    <header>
+        <nav class="navbar">
+            <a class="logo" href="index.html" aria-label="Gourmet Express home">🍔 Gourmet<span>Express</span></a>
+            <div class="nav-links">
+                <a href="#menu">Menu</a>
+                <a href="admin.html" class="admin-link">Admin</a>
+                <button class="cart-icon" type="button" onclick="toggleCart()" aria-label="Open shopping cart">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span id="cart-count">0</span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-copy">
+                <span class="hero-eyebrow"><span class="eyebrow-dot"></span> GOOD FOOD, GOOD MOOD</span>
+                <h1>A little joy,<br>served <span>fresh.</span></h1>
+                <p>Big, feel-good flavors made fresh and brought right to your door. Your next favorite meal is just a few clicks away.</p>
+                <div class="hero-actions">
+                    <a href="#menu" class="btn-primary">Explore the menu <span aria-hidden="true">→</span></a>
+                    <div class="delivery-note"><span aria-hidden="true">◷</span> Fresh to your door in 30 min</div>
+                </div>
+                <div class="hero-proof">
+                    <div class="proof-avatars" aria-hidden="true"><span>J</span><span>M</span><span>A</span></div>
+                    <div><strong>Loved by your neighborhood</strong><span class="proof-rating">★★★★★ <span>4.9 / 5 from 2,000+ happy bites</span></span></div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <img class="hero-food" src="https://images.unsplash.com/photo-1579751626657-72bc17010498?auto=format&fit=crop&w=1000&q=85" alt="Freshly baked pizza topped with basil">
+                <div class="fresh-card"><span class="fresh-icon" aria-hidden="true">✦</span><span><strong>Made fresh</strong><small>Every single time</small></span></div>
+                <div class="price-card"><span>Fan favorite</span><strong>Classic<br>Pepperoni</strong><small>From <b>$14.99</b></small></div>
+            </div>
+        </div>
+        <a class="hero-scroll" href="#menu"><span></span> SCROLL TO EXPLORE</a>
+    </section>
+
+    <main id="menu" class="menu-container">
+        <h2 class="section-title">Our Menu</h2>
+        <div class="category-filters" id="category-filters">
+            <button class="filter-btn active" data-category="all">All</button>
+            <button class="filter-btn" data-category="Starters">Starters</button>
+            <button class="filter-btn" data-category="Mains">Mains</button>
+            <button class="filter-btn" data-category="Desserts">Desserts</button>
+            <button class="filter-btn" data-category="Drinks">Drinks</button>
+        </div>
+        <div class="menu-grid" id="menu-grid">
+            <!-- Menu items will be injected here by app.js -->
+        </div>
+    </main>
+
+    <div class="cart-sidebar" id="cart-sidebar">
+        <div class="cart-header">
+            <h3>Your Order</h3>
+            <i class="fas fa-times" onclick="toggleCart()"></i>
+        </div>
+        <div class="cart-items" id="cart-items">
+            <!-- Cart items will be injected here -->
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cart-total-price">$0.00</span>
+            </div>
+            <button class="btn-checkout" onclick="goToCheckout()">Proceed to Checkout</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Gourmet Express. All rights reserved.</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
