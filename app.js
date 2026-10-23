@@ -15,7 +15,13 @@ const FALLBACK_MENU = [
 ];
 
 let menuItems = [];
-let cart = JSON.parse(localStorage.getItem('gourmet_cart')) || [];
+let cart = [];
+try {
+    const storedCart = JSON.parse(localStorage.getItem('gourmet_cart') || '[]');
+    cart = Array.isArray(storedCart) ? storedCart : [];
+} catch (error) {
+    cart = [];
+}
 let activeCategory = 'all';
 let searchQuery = '';
 let promoDiscount = 0; // percentage discount (e.g. 0.15 for 15% off)
@@ -266,8 +272,11 @@ function applyPromo() {
         recalculateCheckout();
         showToast(`Promo code applied: ${promoDiscount * 100}% discount!`);
     } else {
+        promoDiscount = 0;
+        appliedPromoCode = '';
         msg.style.color = '#ef4444';
-        msg.innerText = 'Invalid promo code. Try GOURMET10 or FEAST20!';
+        msg.innerText = 'Invalid promo code. Try GOURMET10, FEAST20, or WELCOME15!';
+        recalculateCheckout();
     }
 }
 
@@ -375,7 +384,15 @@ function initCheckout() {
             }
 
             // Also keep in localStorage as fallback
-            const localOrders = JSON.parse(localStorage.getItem('gourmet_orders')) || [];
+            let localOrders = [];
+            try {
+                localOrders = JSON.parse(localStorage.getItem('gourmet_orders') || '[]');
+            } catch (error) {
+                localOrders = [];
+            }
+            if (!Array.isArray(localOrders)) {
+                localOrders = [];
+            }
             localOrders.push(savedOrder);
             localStorage.setItem('gourmet_orders', JSON.stringify(localOrders));
 
@@ -389,7 +406,15 @@ function initCheckout() {
             // Local fallback if server unreachable
             orderData.id = 'ORD-' + Date.now();
             orderData.createdAt = new Date().toISOString();
-            const localOrders = JSON.parse(localStorage.getItem('gourmet_orders')) || [];
+            let localOrders = [];
+            try {
+                localOrders = JSON.parse(localStorage.getItem('gourmet_orders') || '[]');
+            } catch (error) {
+                localOrders = [];
+            }
+            if (!Array.isArray(localOrders)) {
+                localOrders = [];
+            }
             localOrders.push(orderData);
             localStorage.setItem('gourmet_orders', JSON.stringify(localOrders));
 

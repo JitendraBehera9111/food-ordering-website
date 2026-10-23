@@ -106,7 +106,7 @@
 <body>
     <header>
         <nav class="navbar">
-            <a class="logo" href="index.html">🍔 Gourmet<span>Express</span></a>
+            <a class="logo" href="index.html">🍔 Gourmet <span>Express</span></a>
             <div class="nav-links">
                 <a href="index.html">Menu</a>
                 <a href="admin.html">Admin</a>
@@ -184,21 +184,33 @@
     <script>
         const STEPS = ['pending', 'preparing', 'out_for_delivery', 'completed'];
 
+        function formatDisplayDate(value, fallback = 'ASAP') {
+            const date = new Date(value);
+            return Number.isNaN(date.getTime()) ? fallback : date.toLocaleString();
+        }
+
         async function fetchOrderDetails(orderId) {
             try {
                 const res = await fetch(`/api/orders`);
                 if (res.ok) {
                     const orders = await res.json();
-                    return orders.find(o => o.id === orderId);
+                    const list = Array.isArray(orders) ? orders : [];
+                    return list.find(o => String(o.id) === String(orderId));
                 }
             } catch (e) {}
 
-            const localOrders = JSON.parse(localStorage.getItem('gourmet_orders')) || [];
-            return localOrders.find(o => o.id === orderId);
+            try {
+                const localOrders = JSON.parse(localStorage.getItem('gourmet_orders') || '[]');
+                const list = Array.isArray(localOrders) ? localOrders : [];
+                return list.find(o => String(o.id) === String(orderId));
+            } catch (error) {
+                return null;
+            }
         }
 
         function updateTimeline(currentStatus) {
-            const stepIndex = STEPS.indexOf(currentStatus);
+            const normalizedStatus = STEPS.includes(currentStatus) ? currentStatus : 'pending';
+            const stepIndex = STEPS.indexOf(normalizedStatus);
             STEPS.forEach((step, idx) => {
                 const el = document.getElementById(`step-${step}`);
                 if (!el) return;
@@ -229,30 +241,37 @@
                 return;
             }
 
+            const customer = order.customer || {};
+            const orderType = order.type || 'delivery';
+            const displayStatus = String(order.status || 'pending').trim().toLowerCase();
+            const orderDate = order.createdAt || order.time || new Date().toISOString();
+            const orderTime = order.time || order.createdAt || new Date().toISOString();
+
             loading.style.display = 'none';
             content.style.display = 'block';
 
             document.getElementById('display-order-id').innerText = order.id;
-            document.getElementById('display-order-date').innerText = new Date(order.createdAt).toLocaleString();
+            document.getElementById('display-order-date').innerText = formatDisplayDate(orderDate);
             
             const badge = document.getElementById('display-badge');
-            badge.innerText = order.status.toUpperCase();
-            badge.className = `status-pill status-${order.status}`;
+            badge.innerText = displayStatus.toUpperCase();
+            badge.className = `status-pill status-${displayStatus}`;
 
-            document.getElementById('display-customer-name').innerHTML = `<strong>Name:</strong> ${order.customer.name} (${order.customer.phone})`;
-            document.getElementById('display-customer-address').innerHTML = `<strong>Address:</strong> ${order.customer.address}`;
-            document.getElementById('display-customer-time').innerHTML = `<strong>Type & Time:</strong> ${order.type.toUpperCase()} • ${new Date(order.time).toLocaleString()}`;
-            document.getElementById('display-order-total').innerText = `$${Number(order.total).toFixed(2)}`;
+            document.getElementById('display-customer-name').innerHTML = `<strong>Name:</strong> ${customer.name || 'Guest'} (${customer.phone || 'No phone'})`;
+            document.getElementById('display-customer-address').innerHTML = `<strong>Address:</strong> ${customer.address || 'No address provided'}`;
+            document.getElementById('display-customer-time').innerHTML = `<strong>Type & Time:</strong> ${String(orderType).toUpperCase()} • ${formatDisplayDate(orderTime)}`;
+            document.getElementById('display-order-total').innerText = `$${Number(order.total || 0).toFixed(2)}`;
 
             const itemsContainer = document.getElementById('display-items-list');
-            itemsContainer.innerHTML = order.items.map(item => `
+            const items = Array.isArray(order.items) ? order.items : [];
+            itemsContainer.innerHTML = items.map(item => `
                 <div class="order-item-row">
-                    <span>${item.qty} × ${item.name}</span>
-                    <span>$${(item.price * item.qty).toFixed(2)}</span>
+                    <span>${item.qty || 1} × ${item.name || 'Item'}</span>
+                    <span>$${((Number(item.price) || 0) * (Number(item.qty) || 1)).toFixed(2)}</span>
                 </div>
-            `).join('');
+            `).join('') || '<div class="order-item-row"><span>No items listed</span></div>';
 
-            updateTimeline(order.status);
+            updateTimeline(displayStatus);
         }
 
         function lookupOrder() {

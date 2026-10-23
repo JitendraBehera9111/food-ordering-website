@@ -26,12 +26,23 @@ async function fetchOrders() {
     try {
         const res = await fetch(`${API_URL}/orders`);
         if (res.ok) {
-            orders = await res.json();
+            const data = await res.json();
+            orders = Array.isArray(data) ? data : [];
         } else {
-            orders = JSON.parse(localStorage.getItem('gourmet_orders')) || [];
+            try {
+                const stored = JSON.parse(localStorage.getItem('gourmet_orders') || '[]');
+                orders = Array.isArray(stored) ? stored : [];
+            } catch (error) {
+                orders = [];
+            }
         }
     } catch (e) {
-        orders = JSON.parse(localStorage.getItem('gourmet_orders')) || [];
+        try {
+            const stored = JSON.parse(localStorage.getItem('gourmet_orders') || '[]');
+            orders = Array.isArray(stored) ? stored : [];
+        } catch (error) {
+            orders = [];
+        }
     }
 
     renderOrdersTable(orders);
@@ -48,19 +59,25 @@ function renderOrdersTable(orders) {
     ordersTbody.innerHTML = '';
     let pending = 0;
     let revenue = 0;
+    const safeOrders = Array.isArray(orders) ? orders : [];
 
-    if (orders.length === 0) {
+    if (safeOrders.length === 0) {
         ordersTbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #94a3b8; padding: 24px;">No customer orders placed yet.</td></tr>';
     } else {
-        orders.slice().reverse().forEach((order) => {
-            if (order.status !== 'completed' && order.status !== 'cancelled') {
+        safeOrders.slice().reverse().forEach((order) => {
+            const normalizedStatus = String(order.status || 'pending').trim().toLowerCase();
+            const customer = order.customer || {};
+            const items = Array.isArray(order.items) ? order.items : [];
+
+            if (normalizedStatus !== 'completed' && normalizedStatus !== 'cancelled') {
                 pending++;
             }
-            if (order.status !== 'cancelled') {
+            if (normalizedStatus !== 'cancelled') {
                 revenue += Number(order.total) || 0;
             }
 
-            const itemsSummary = order.items.map(i => `${i.name} (x${i.qty})`).join(', ');
+            const itemsSummary = items.map(item => `${item.name || 'Item'} (x${item.qty || 1})`).join(', ') || 'No items';
+            const orderDate = order.createdAt || order.time || new Date().toISOString();
 
             ordersTbody.innerHTML += `
                 <tr>
@@ -69,21 +86,21 @@ function renderOrdersTable(orders) {
                         <a href="track.html?orderId=${order.id}" target="_blank" style="color: #ff4757; font-size: 11px; text-decoration: none;">View Tracking ↗</a>
                     </td>
                     <td>
-                        <strong>${order.customer.name}</strong><br>
-                        <small style="color: #64748b;">${order.customer.phone}</small><br>
-                        <small style="color: #64748b;">${order.customer.address}</small>
+                        <strong>${customer.name || 'Guest Customer'}</strong><br>
+                        <small style="color: #64748b;">${customer.phone || 'No phone provided'}</small><br>
+                        <small style="color: #64748b;">${customer.address || 'No address provided'}</small>
                     </td>
                     <td><small>${itemsSummary}</small></td>
-                    <td><strong>$${Number(order.total).toFixed(2)}</strong></td>
-                    <td><small>${new Date(order.createdAt || order.time).toLocaleString()}</small></td>
-                    <td><span class="status-pill status-${order.status}">${order.status.toUpperCase()}</span></td>
+                    <td><strong>$${Number(order.total || 0).toFixed(2)}</strong></td>
+                    <td><small>${new Date(orderDate).toLocaleString()}</small></td>
+                    <td><span class="status-pill status-${normalizedStatus}">${normalizedStatus.toUpperCase()}</span></td>
                     <td>
                         <select onchange="updateOrderStatus('${order.id}', this.value)" style="padding: 6px 8px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 13px;">
-                            <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pending</option>
-                            <option value="preparing" ${order.status === 'preparing' ? 'selected' : ''}>Preparing</option>
-                            <option value="out_for_delivery" ${order.status === 'out_for_delivery' ? 'selected' : ''}>Out for Delivery</option>
-                            <option value="completed" ${order.status === 'completed' ? 'selected' : ''}>Delivered / Completed</option>
-                            <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                            <option value="pending" ${normalizedStatus === 'pending' ? 'selected' : ''}>Pending</option>
+                            <option value="preparing" ${normalizedStatus === 'preparing' ? 'selected' : ''}>Preparing</option>
+                            <option value="out_for_delivery" ${normalizedStatus === 'out_for_delivery' ? 'selected' : ''}>Out for Delivery</option>
+                            <option value="completed" ${normalizedStatus === 'completed' ? 'selected' : ''}>Delivered / Completed</option>
+                            <option value="cancelled" ${normalizedStatus === 'cancelled' ? 'selected' : ''}>Cancelled</option>
                         </select>
                     </td>
                 </tr>
@@ -91,8 +108,8 @@ function renderOrdersTable(orders) {
         });
     }
 
-    if (totalCount) totalCount.innerText = orders.length;
-    if (pendingCount) pendingCount.innerText = pending;
+    if (totalCount) totalCount.innerText = String(safeOrders.length);
+    if (pendingCount) pendingCount.innerText = String(pending);
     if (totalRevenueSpan) totalRevenueSpan.innerText = `$${revenue.toFixed(2)}`;
 }
 
@@ -104,12 +121,16 @@ window.updateOrderStatus = async (id, status) => {
             body: JSON.stringify({ status })
         });
     } catch (e) {
-        // Fallback to localStorage
-        const orders = JSON.parse(localStorage.getItem('gourmet_orders')) || [];
-        const order = orders.find(o => o.id === id);
-        if (order) {
-            order.status = status;
-            localStorage.setItem('gourmet_orders', JSON.stringify(orders));
+        try {
+            const stored = JSON.parse(localStorage.getItem('gourmet_orders') || '[]');
+            const orders = Array.isArray(stored) ? stored : [];
+            const order = orders.find(o => String(o.id) === String(id));
+            if (order) {
+                order.status = status;
+                localStorage.setItem('gourmet_orders', JSON.stringify(orders));
+            }
+        } catch (error) {
+            // Ignore local fallback errors.
         }
     }
     fetchOrders();

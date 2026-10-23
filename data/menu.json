@@ -88,5 +88,25 @@
     "isVeg": true,
     "rating": 4.6,
     "img": "https://images.unsplash.com/photo-1622483767028-73976565776c?auto=format&fit=crop&w=400&q=80"
+  },
+  {
+    "id": 1792784994166,
+    "name": "Test Pizza",
+    "price": 12.5,
+    "category": "Mains",
+    "desc": "Tasty test pizza",
+    "isVeg": true,
+    "rating": 5,
+    "img": "https://example.com/test.jpg"
+  },
+  {
+    "id": 1792785209529,
+    "name": "Test Menu Item",
+    "price": 12.5,
+    "category": "Starters",
+    "desc": "A test item",
+    "isVeg": true,
+    "rating": 5,
+    "img": "https://example.com/pizza.jpg"
   }
 ]

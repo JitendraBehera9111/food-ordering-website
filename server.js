@@ -41,6 +41,55 @@ function writeJson(file, data) {
   fs.writeFileSync(file, JSON.stringify(data, null, 2));
 }
 
+function sanitizeMenuItem(item) {
+  if (!item || typeof item !== 'object') return null;
+
+  const price = Number(item.price);
+  if (!Number.isFinite(price) || price < 0) return null;
+
+  return {
+    id: Number(item.id) || Date.now(),
+    name: String(item.name || '').trim(),
+    price: Number(price.toFixed(2)),
+    category: String(item.category || 'Starters').trim() || 'Starters',
+    desc: String(item.desc || '').trim(),
+    isVeg: Boolean(item.isVeg),
+    rating: Number(item.rating) || 5,
+    img: String(item.img || '').trim()
+  };
+}
+
+function sanitizeOrder(order) {
+  if (!order || typeof order !== 'object') return null;
+
+  const total = Number(order.total);
+  if (!order.customer || !order.items || !Array.isArray(order.items) || !Number.isFinite(total)) {
+    return null;
+  }
+
+  return {
+    ...order,
+    id: String(order.id || 'ORD-' + Date.now()),
+    status: String(order.status || 'pending').trim().toLowerCase() || 'pending',
+    total: Number(total.toFixed(2)),
+    createdAt: order.createdAt || new Date().toISOString(),
+    customer: {
+      name: String(order.customer.name || 'Guest').trim(),
+      phone: String(order.customer.phone || 'N/A').trim(),
+      address: String(order.customer.address || 'Not provided').trim(),
+    },
+    items: order.items.map(item => ({
+      id: Number(item.id) || 0,
+      name: String(item.name || 'Item').trim(),
+      qty: Number(item.qty) || 1,
+      price: Number(item.price) || 0,
+      img: String(item.img || '').trim(),
+      category: String(item.category || '').trim(),
+      isVeg: Boolean(item.isVeg)
+    }))
+  };
+}
+
 const MIME_TYPES = {
   '.html': 'text/html',
   '.css': 'text/css',
@@ -80,7 +129,11 @@ const server = http.createServer((req, res) => {
     req.on('data', chunk => { body += chunk; });
     req.on('end', () => {
       try {
-        const newItem = JSON.parse(body);
+        const parsed = JSON.parse(body);
+        const newItem = sanitizeMenuItem(parsed);
+        if (!newItem || !newItem.name || !newItem.img || !newItem.desc) {
+          throw new Error('Invalid menu item');
+        }
         const menu = readJson(MENU_FILE);
         newItem.id = Date.now();
         menu.push(newItem);
@@ -89,7 +142,7 @@ const server = http.createServer((req, res) => {
         res.end(JSON.stringify(newItem));
       } catch (e) {
         res.writeHead(400, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: 'Invalid JSON' }));
+        res.end(JSON.stringify({ error: 'Invalid menu item data' }));
       }
     });
     return;
@@ -116,7 +169,11 @@ const server = http.createServer((req, res) => {
     req.on('data', chunk => { body += chunk; });
     req.on('end', () => {
       try {
-        const orderData = JSON.parse(body);
+        const parsed = JSON.parse(body);
+        const orderData = sanitizeOrder(parsed);
+        if (!orderData) {
+          throw new Error('Invalid order data');
+        }
         const orders = readJson(ORDERS_FILE);
         orderData.id = 'ORD-' + Date.now();
         orderData.createdAt = new Date().toISOString();
@@ -139,11 +196,13 @@ const server = http.createServer((req, res) => {
     req.on('data', chunk => { body += chunk; });
     req.on('end', () => {
       try {
-        const { status } = JSON.parse(body);
+        const payload = JSON.parse(body);
+        const status = typeof payload.status === 'string' ? payload.status.trim().toLowerCase() : '';
+        const validStatus = ['pending', 'preparing', 'out_for_delivery', 'completed', 'cancelled'].includes(status) ? status : 'pending';
         const orders = readJson(ORDERS_FILE);
-        const order = orders.find(o => o.id === id);
+        const order = orders.find(o => String(o.id) === String(id));
         if (order) {
-          order.status = status;
+          order.status = validStatus;
           writeJson(ORDERS_FILE, orders);
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify(order));
