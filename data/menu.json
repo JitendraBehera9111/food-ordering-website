@@ -1,0 +1,92 @@
+[
+  {
+    "id": 1,
+    "name": "Garlic Bread",
+    "price": 5.99,
+    "category": "Starters",
+    "desc": "Toasted baguette with garlic butter and herbs",
+    "isVeg": true,
+    "rating": 4.8,
+    "img": "https://images.unsplash.com/photo-1619860860774-1e2e17343432?auto=format&fit=crop&w=400&q=80"
+  },
+  {
+    "id": 2,
+    "name": "Mozzarella Sticks",
+    "price": 7.49,
+    "category": "Starters",
+    "desc": "Crispy melted cheese with marinara dip",
+    "isVeg": true,
+    "rating": 4.7,
+    "img": "https://images.unsplash.com/photo-1548340748-6d2b7d7da280?auto=format&fit=crop&w=400&q=80"
+  },
+  {
+    "id": 3,
+    "name": "Classic Pepperoni",
+    "price": 14.99,
+    "category": "Mains",
+    "desc": "Mozzarella, pepperoni, and signature tomato sauce",
+    "isVeg": false,
+    "rating": 4.9,
+    "img": "https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&w=400&q=80"
+  },
+  {
+    "id": 4,
+    "name": "BBQ Chicken Pizza",
+    "price": 16.49,
+    "category": "Mains",
+    "desc": "Grilled chicken, BBQ sauce, red onions, and cilantro",
+    "isVeg": false,
+    "rating": 4.8,
+    "img": "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=400&q=80"
+  },
+  {
+    "id": 5,
+    "name": "Veggie Delight",
+    "price": 13.99,
+    "category": "Mains",
+    "desc": "Bell peppers, mushrooms, olives, and fresh spinach",
+    "isVeg": true,
+    "rating": 4.6,
+    "img": "https://images.unsplash.com/photo-1574071318508-1cdbe5c7e2f1?auto=format&fit=crop&w=400&q=80"
+  },
+  {
+    "id": 6,
+    "name": "Tiramisu",
+    "price": 6.99,
+    "category": "Desserts",
+    "desc": "Traditional Italian coffee-flavored dessert",
+    "isVeg": true,
+    "rating": 4.9,
+    "img": "https://images.unsplash.com/photo-1571877227200-a0d766f6655d?auto=format&fit=crop&w=400&q=80"
+  },
+  {
+    "id": 7,
+    "name": "Chocolate Lava Cake",
+    "price": 7.99,
+    "category": "Desserts",
+    "desc": "Warm cake with a gooey chocolate center",
+    "isVeg": true,
+    "rating": 4.9,
+    "img": "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=400&q=80"
+  },
+  {
+    "id": 8,
+    "name": "Iced Peach Tea",
+    "price": 3.49,
+    "category": "Drinks",
+    "desc": "Refreshing brewed tea with natural peach flavor",
+    "isVeg": true,
+    "rating": 4.5,
+    "img": "https://images.unsplash.com/photo-1556679343-66577d2d237f?auto=format&fit=crop&w=400&q=80"
+  },
+  {
+    "id": 9,
+    "name": "Classic Cola",
+    "price": 2.49,
+    "category": "Drinks",
+    "desc": "Ice cold refreshing cola",
+    "isVeg": true,
+    "rating": 4.6,
+    "img": "https://images.unsplash.com/photo-1622483767028-73976565776c?auto=format&fit=crop&w=400&q=80"
+  }
+]

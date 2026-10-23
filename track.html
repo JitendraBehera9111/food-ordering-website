@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Your Order | Gourmet Express</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .track-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        .track-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+            border: 1px solid #f1f5f9;
+        }
+        .status-timeline {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin: 40px 0;
+        }
+        .status-timeline::before {
+            content: '';
+            position: absolute;
+            top: 24px;
+            left: 5%;
+            width: 90%;
+            height: 4px;
+            background: #e2e8f0;
+            z-index: 1;
+        }
+        .timeline-step {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            width: 25%;
+        }
+        .step-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #f8fafc;
+            border: 3px solid #cbd5e1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            color: #94a3b8;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }
+        .timeline-step.completed .step-icon {
+            background: #10b981;
+            border-color: #10b981;
+            color: #ffffff;
+        }
+        .timeline-step.active .step-icon {
+            background: #ff4757;
+            border-color: #ff4757;
+            color: #ffffff;
+            box-shadow: 0 0 0 6px rgba(255, 71, 87, 0.2);
+            animation: pulse 1.8s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 71, 87, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); }
+        }
+        .step-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+        .step-time {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+        .order-details-box {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 24px;
+        }
+        .order-item-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #edf2f7;
+            font-size: 14px;
+        }
+        .order-item-row:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <a class="logo" href="index.html">🍔 Gourmet<span>Express</span></a>
+            <div class="nav-links">
+                <a href="index.html">Menu</a>
+                <a href="admin.html">Admin</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="track-container">
+        <!-- Order Lookup Section -->
+        <div style="margin-bottom: 24px; display: flex; gap: 8px;">
+            <input type="text" id="track-id-input" placeholder="Enter Order ID (e.g. ORD-1718000000000)" style="flex: 1; padding: 12px 16px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px;">
+            <button class="btn-primary" onclick="lookupOrder()">Find Order</button>
+        </div>
+
+        <div class="track-card" id="track-card">
+            <div style="text-align: center; padding: 40px 0;" id="loading-state">
+                <i class="fas fa-spinner fa-spin" style="font-size: 2.5rem; color: #ff4757;"></i>
+                <p style="margin-top: 12px; color: #64748b;">Loading order status...</p>
+            </div>
+
+            <div id="order-content" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 16px;">
+                    <div>
+                        <h2 style="margin: 0; font-size: 1.5rem;" id="display-order-id">ORD-0000000</h2>
+                        <span style="color: #64748b; font-size: 13px;" id="display-order-date">Placed just now</span>
+                    </div>
+                    <span id="display-badge" class="status-pill status-pending" style="font-size: 14px; padding: 6px 14px;">Pending</span>
+                </div>
+
+                <!-- Timeline -->
+                <div class="status-timeline">
+                    <div class="timeline-step" id="step-pending">
+                        <div class="step-icon"><i class="fas fa-receipt"></i></div>
+                        <div class="step-title">Order Received</div>
+                        <div class="step-time">Confirmed</div>
+                    </div>
+                    <div class="timeline-step" id="step-preparing">
+                        <div class="step-icon"><i class="fas fa-fire-burner"></i></div>
+                        <div class="step-title">Kitchen Preparing</div>
+                        <div class="step-time">Freshly cooking</div>
+                    </div>
+                    <div class="timeline-step" id="step-out_for_delivery">
+                        <div class="step-icon"><i class="fas fa-motorcycle"></i></div>
+                        <div class="step-title">On the Way</div>
+                        <div class="step-time">Courier assigned</div>
+                    </div>
+                    <div class="timeline-step" id="step-completed">
+                        <div class="step-icon"><i class="fas fa-circle-check"></i></div>
+                        <div class="step-title">Delivered</div>
+                        <div class="step-time">Enjoy your meal!</div>
+                    </div>
+                </div>
+
+                <!-- Details -->
+                <div class="order-details-box">
+                    <h4 style="margin-top: 0; margin-bottom: 12px;">Delivery Destination</h4>
+                    <p style="margin: 4px 0; color: #475569;" id="display-customer-name"><strong>Name:</strong> John</p>
+                    <p style="margin: 4px 0; color: #475569;" id="display-customer-address"><strong>Address:</strong> 123 Main St</p>
+                    <p style="margin: 4px 0; color: #475569;" id="display-customer-time"><strong>Scheduled for:</strong> ASAP</p>
+
+                    <h4 style="margin-top: 16px; margin-bottom: 8px;">Items Ordered</h4>
+                    <div id="display-items-list">
+                        <!-- Items injected here -->
+                    </div>
+
+                    <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid #cbd5e1; display: flex; justify-content: space-between; font-weight: bold; font-size: 16px;">
+                        <span>Total Paid</span>
+                        <span id="display-order-total">$0.00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const STEPS = ['pending', 'preparing', 'out_for_delivery', 'completed'];
+
+        async function fetchOrderDetails(orderId) {
+            try {
+                const res = await fetch(`/api/orders`);
+                if (res.ok) {
+                    const orders = await res.json();
+                    return orders.find(o => o.id === orderId);
+                }
+            } catch (e) {}
+
+            const localOrders = JSON.parse(localStorage.getItem('gourmet_orders')) || [];
+            return localOrders.find(o => o.id === orderId);
+        }
+
+        function updateTimeline(currentStatus) {
+            const stepIndex = STEPS.indexOf(currentStatus);
+            STEPS.forEach((step, idx) => {
+                const el = document.getElementById(`step-${step}`);
+                if (!el) return;
+                el.classList.remove('completed', 'active');
+                if (idx < stepIndex) {
+                    el.classList.add('completed');
+                } else if (idx === stepIndex) {
+                    el.classList.add('active');
+                }
+            });
+        }
+
+        async function renderTracker(orderId) {
+            const loading = document.getElementById('loading-state');
+            const content = document.getElementById('order-content');
+
+            loading.style.display = 'block';
+            content.style.display = 'none';
+
+            const order = await fetchOrderDetails(orderId);
+
+            if (!order) {
+                loading.innerHTML = `
+                    <i class="fas fa-circle-exclamation" style="font-size: 2.5rem; color: #f59e0b;"></i>
+                    <h3 style="margin-top: 12px;">Order Not Found</h3>
+                    <p style="color: #64748b;">We couldn't find an order matching "<strong>${orderId}</strong>". Please check your ID and try again.</p>
+                `;
+                return;
+            }
+
+            loading.style.display = 'none';
+            content.style.display = 'block';
+
+            document.getElementById('display-order-id').innerText = order.id;
+            document.getElementById('display-order-date').innerText = new Date(order.createdAt).toLocaleString();
+            
+            const badge = document.getElementById('display-badge');
+            badge.innerText = order.status.toUpperCase();
+            badge.className = `status-pill status-${order.status}`;
+
+            document.getElementById('display-customer-name').innerHTML = `<strong>Name:</strong> ${order.customer.name} (${order.customer.phone})`;
+            document.getElementById('display-customer-address').innerHTML = `<strong>Address:</strong> ${order.customer.address}`;
+            document.getElementById('display-customer-time').innerHTML = `<strong>Type & Time:</strong> ${order.type.toUpperCase()} • ${new Date(order.time).toLocaleString()}`;
+            document.getElementById('display-order-total').innerText = `$${Number(order.total).toFixed(2)}`;
+
+            const itemsContainer = document.getElementById('display-items-list');
+            itemsContainer.innerHTML = order.items.map(item => `
+                <div class="order-item-row">
+                    <span>${item.qty} × ${item.name}</span>
+                    <span>$${(item.price * item.qty).toFixed(2)}</span>
+                </div>
+            `).join('');
+
+            updateTimeline(order.status);
+        }
+
+        function lookupOrder() {
+            const id = document.getElementById('track-id-input').value.trim();
+            if (id) {
+                renderTracker(id);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const orderId = urlParams.get('orderId');
+            if (orderId) {
+                document.getElementById('track-id-input').value = orderId;
+                renderTracker(orderId);
+                // Auto refresh every 5 seconds for live status
+                setInterval(() => renderTracker(orderId), 5000);
+            } else {
+                document.getElementById('loading-state').innerHTML = `
+                    <i class="fas fa-search" style="font-size: 2.5rem; color: #94a3b8;"></i>
+                    <h3 style="margin-top: 12px;">Track Your Gourmet Express Order</h3>
+                    <p style="color: #64748b;">Enter your Order ID above to check the live status of your meal.</p>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
+

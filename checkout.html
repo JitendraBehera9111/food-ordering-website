@@ -5,54 +5,95 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout | Gourmet Express</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <header>
         <nav class="navbar">
-            <div class="logo">🍔 Gourmet<span>Express</span></div>
+            <a class="logo" href="index.html">🍔 Gourmet<span>Express</span></a>
             <a href="index.html" class="back-link">← Back to Menu</a>
         </nav>
     </header>
 
     <main class="checkout-container">
         <div class="checkout-layout">
+            <!-- Order Summary Section -->
             <div class="order-summary">
                 <h2>Order Summary</h2>
                 <div id="summary-items">
-                    <!-- Summary injected here -->
+                    <!-- Summary items injected here -->
                 </div>
-                <div class="summary-total">
-                    <strong>Total: <span id="summary-total">$0.00</span></strong>
+
+                <!-- Promo Code Section -->
+                <div style="margin: 20px 0; padding-top: 16px; border-top: 1px dashed #e2e8f0;">
+                    <label style="font-size: 13px; font-weight: 600; color: #475569; display: block; margin-bottom: 6px;">Have a Promo Code?</label>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" id="promo-input" placeholder="e.g. GOURMET10, FEAST20" style="flex: 1; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; text-transform: uppercase;">
+                        <button type="button" class="btn-primary" onclick="applyPromo()" style="padding: 10px 16px; font-size: 14px;">Apply</button>
+                    </div>
+                    <div id="promo-message" style="font-size: 13px; margin-top: 6px; font-weight: 500;"></div>
+                </div>
+
+                <!-- Price Breakdown -->
+                <div style="border-top: 1px solid #e2e8f0; padding-top: 16px; display: flex; flex-direction: column; gap: 8px;">
+                    <div style="display: flex; justify-content: space-between; color: #64748b; font-size: 14px;">
+                        <span>Subtotal</span>
+                        <span id="summary-subtotal">$0.00</span>
+                    </div>
+                    <div id="discount-row" style="display: none; justify-content: space-between; color: #10b981; font-size: 14px; font-weight: 600;">
+                        <span>Discount Promo</span>
+                        <span id="summary-discount">-$0.00</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; color: #64748b; font-size: 14px;">
+                        <span>Delivery Fee (Free over $30)</span>
+                        <span id="summary-delivery">$3.99</span>
+                    </div>
+                    <div class="summary-total" style="margin-top: 10px; padding-top: 12px; border-top: 2px solid #0f172a; display: flex; justify-content: space-between; font-size: 1.25rem;">
+                        <span>Total:</span>
+                        <strong id="summary-total">$0.00</strong>
+                    </div>
                 </div>
             </div>
 
+            <!-- Delivery & Payment Form -->
             <div class="checkout-form-section">
-                <h2>Delivery Details</h2>
+                <h2>Delivery & Contact Details</h2>
                 <form id="checkout-form">
                     <div class="form-group">
-                        <label for="name">Full Name</label>
+                        <label for="name"><i class="fas fa-user"></i> Full Name</label>
                         <input type="text" id="name" required placeholder="John Doe">
                     </div>
                     <div class="form-group">
-                        <label for="phone">Phone Number</label>
+                        <label for="phone"><i class="fas fa-phone"></i> Phone Number</label>
                         <input type="tel" id="phone" required placeholder="123-456-7890">
                     </div>
                     <div class="form-group">
-                        <label for="address">Delivery Address</label>
-                        <input type="text" id="address" required placeholder="123 Main St, City">
+                        <label for="address"><i class="fas fa-map-marker-alt"></i> Delivery Address</label>
+                        <input type="text" id="address" required placeholder="123 Delicious Lane, Apt 4B">
                     </div>
                     <div class="form-group">
-                        <label for="order-type">Order Type</label>
+                        <label for="order-type"><i class="fas fa-utensils"></i> Order Type</label>
                         <select id="order-type" required>
-                            <option value="delivery">Delivery</option>
-                            <option value="pickup">Pickup</option>
+                            <option value="delivery">Express Delivery (30-40 mins)</option>
+                            <option value="pickup">Self Pickup at Restaurant</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="pickup-time">Scheduled Time</label>
+                        <label for="pickup-time"><i class="fas fa-clock"></i> Preferred Delivery / Pickup Time</label>
                         <input type="datetime-local" id="pickup-time" required>
                     </div>
-                    <button type="submit" class="btn-primary full-width">Place Order</button>
+                    <div class="form-group">
+                        <label><i class="fas fa-credit-card"></i> Payment Method</label>
+                        <div style="display: flex; gap: 12px; margin-top: 6px;">
+                            <label style="flex: 1; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; display: flex; align-items: center; gap: 8px; cursor: pointer; background: #fff;">
+                                <input type="radio" name="payment_method" value="cod" checked> Cash on Delivery
+                            </label>
+                            <label style="flex: 1; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; display: flex; align-items: center; gap: 8px; cursor: pointer; background: #fff;">
+                                <input type="radio" name="payment_method" value="card"> Credit / Debit Card
+                            </label>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary full-width" style="margin-top: 12px; font-size: 1.1rem; padding: 16px;">Place Order Now →</button>
                 </form>
             </div>
         </div>
@@ -60,12 +101,18 @@
 
     <script src="app.js"></script>
     <script>
-        // Setup the minimum datetime for the pickup-time input to be "now"
-        window.onload = () => {
+        // Set default pickup time to current local time + 30 mins
+        window.addEventListener('DOMContentLoaded', () => {
             const now = new Date();
-            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-            document.getElementById('pickup-time').min = now.toISOString().slice(0,16);
-        };
+            now.setMinutes(now.getMinutes() + 30);
+            const tzOffset = now.getTimezoneOffset() * 60000;
+            const localISOTime = (new Date(now - tzOffset)).toISOString().slice(0, 16);
+            const timeInput = document.getElementById('pickup-time');
+            if (timeInput) {
+                timeInput.min = (new Date(Date.now() - tzOffset)).toISOString().slice(0, 16);
+                timeInput.value = localISOTime;
+            }
+        });
     </script>
 </body>
 </html>

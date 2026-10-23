@@ -1,4 +1,4 @@
-﻿:root {
+:root {
     --primary: #e75b35;
     --primary-dark: #c94422;
     --secondary: #24352d;
@@ -1004,5 +1004,52 @@ footer {
     .cart-sidebar {
         width: 100%;
         right: -100%;
+    }
+}
+
+
+/* --- Modern Enhancements & Status Styles --- */
+.status-pill {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.status-pending {
+    background: #fef3c7;
+    color: #d97706;
+}
+.status-preparing {
+    background: #fed7aa;
+    color: #ea580c;
+}
+.status-out_for_delivery {
+    background: #e0e7ff;
+    color: #4f46e5;
+}
+.status-completed {
+    background: #d1fae5;
+    color: #059669;
+}
+.status-cancelled {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+/* Toast Alert Animation */
+.toast {
+    animation: toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes toastIn {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }

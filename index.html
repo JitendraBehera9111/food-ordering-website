@@ -13,7 +13,8 @@
             <a class="logo" href="index.html" aria-label="Gourmet Express home">🍔 Gourmet<span>Express</span></a>
             <div class="nav-links">
                 <a href="#menu">Menu</a>
-                <a href="admin.html" class="admin-link">Admin</a>
+                <a href="track.html">Track Order</a>
+                <a href="admin.html" class="admin-link"><i class="fas fa-lock"></i> Admin</a>
                 <button class="cart-icon" type="button" onclick="toggleCart()" aria-label="Open shopping cart">
                     <i class="fas fa-shopping-cart"></i>
                     <span id="cart-count">0</span>
@@ -30,7 +31,7 @@
                 <p>Big, feel-good flavors made fresh and brought right to your door. Your next favorite meal is just a few clicks away.</p>
                 <div class="hero-actions">
                     <a href="#menu" class="btn-primary">Explore the menu <span aria-hidden="true">→</span></a>
-                    <div class="delivery-note"><span aria-hidden="true">◷</span> Fresh to your door in 30 min</div>
+                    <div class="delivery-note"><span aria-hidden="true">⚡</span> Free delivery on orders over $30</div>
                 </div>
                 <div class="hero-proof">
                     <div class="proof-avatars" aria-hidden="true"><span>J</span><span>M</span><span>A</span></div>
@@ -49,23 +50,34 @@
     <section class="features" aria-label="Why choose Gourmet Express">
         <div class="feature-card">
             <span class="feature-icon"><i class="fas fa-bolt"></i></span>
-            <h3>Fast Delivery</h3>
-            <p>Hot meals delivered fast, fresh, and still packed with flavor.</p>
+            <h3>Fast 30-Min Delivery</h3>
+            <p>Hot meals delivered fast, fresh, and piping hot straight from the kitchen.</p>
         </div>
         <div class="feature-card">
             <span class="feature-icon"><i class="fas fa-leaf"></i></span>
             <h3>Fresh Ingredients</h3>
-            <p>Hand-picked ingredients and crafted recipes in every dish.</p>
+            <p>Hand-picked organic ingredients and crafted artisan recipes in every dish.</p>
         </div>
         <div class="feature-card">
             <span class="feature-icon"><i class="fas fa-star"></i></span>
-            <h3>Top Rated</h3>
-            <p>Neighborhood favorite with rave reviews and consistent quality.</p>
+            <h3>Top Rated Chefs</h3>
+            <p>Neighborhood favorite with rave reviews, consistent quality, and love.</p>
         </div>
     </section>
 
     <main id="menu" class="menu-container">
-        <h2 class="section-title">Our Menu</h2>
+        <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px; margin-bottom: 24px;">
+            <div>
+                <h2 class="section-title" style="margin-bottom: 8px;">Our Delicious Menu</h2>
+                <p style="color: #64748b; margin: 0;">Crafted with passion, delivered with care.</p>
+            </div>
+            <!-- Search Bar -->
+            <div style="position: relative; min-width: 280px;">
+                <i class="fas fa-search" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
+                <input type="text" id="menu-search" placeholder="Search pizza, dessert, drinks..." style="width: 100%; padding: 12px 14px 12px 38px; border: 1px solid #e2e8f0; border-radius: 999px; font-size: 14px; outline: none; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
+            </div>
+        </div>
+
         <div class="category-filters" id="category-filters">
             <button class="filter-btn active" data-category="all">All</button>
             <button class="filter-btn" data-category="Starters">Starters</button>
@@ -73,30 +85,33 @@
             <button class="filter-btn" data-category="Desserts">Desserts</button>
             <button class="filter-btn" data-category="Drinks">Drinks</button>
         </div>
+
         <div class="menu-grid" id="menu-grid">
-            <!-- Menu items will be injected here by app.js -->
+            <!-- Menu items injected dynamically via app.js -->
         </div>
     </main>
 
+    <!-- Shopping Cart Sidebar -->
     <div class="cart-sidebar" id="cart-sidebar">
         <div class="cart-header">
-            <h3>Your Order</h3>
-            <i class="fas fa-times" onclick="toggleCart()"></i>
+            <h3><i class="fas fa-shopping-bag"></i> Your Order</h3>
+            <i class="fas fa-times close-cart-btn" onclick="toggleCart()" style="cursor: pointer; font-size: 1.25rem;"></i>
         </div>
         <div class="cart-items" id="cart-items">
-            <!-- Cart items will be injected here -->
+            <!-- Injected dynamically -->
         </div>
         <div class="cart-footer">
             <div class="cart-total">
-                <span>Total:</span>
+                <span>Subtotal:</span>
                 <span id="cart-total-price">$0.00</span>
             </div>
-            <button class="btn-checkout" onclick="goToCheckout()">Proceed to Checkout</button>
+            <p style="font-size: 12px; color: #64748b; margin: 4px 0 12px 0;">Taxes and discounts calculated at checkout.</p>
+            <button class="btn-checkout" onclick="goToCheckout()">Proceed to Checkout →</button>
         </div>
     </div>
 
     <footer>
-        <p>&copy; 2026 Gourmet Express. All rights reserved.</p>
+        <p>&copy; 2026 Gourmet Express. All rights reserved. Made with ❤️ for food lovers.</p>
     </footer>
 
     <script src="app.js"></script>
